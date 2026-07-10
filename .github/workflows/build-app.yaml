@@ -17,7 +17,7 @@ jobs:
         run: echo "sha_short=${GITHUB_SHA:0:7}" >> $GITHUB_OUTPUT
 
       - name: Build App container
-        run: docker build -t ${{ vars.DOCKER_USERNAME }}/log-generator .
+        run: docker build -t ${{ vars.DOCKER_USERNAME }}/log-generator:${GITHUB_SHA:0:7} .
       - name: list image
         run: docker image ls 
       - name: Login to Docker Hub
