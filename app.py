@@ -20,8 +20,9 @@ MIN_INTERVAL = float(os.getenv("MIN_INTERVAL", "0.2"))     # seconds between log
 MAX_INTERVAL = float(os.getenv("MAX_INTERVAL", "2.0"))
 ERROR_RATE = float(os.getenv("ERROR_RATE", "0.08"))        # probability of ERROR/5xx
 WARN_RATE = float(os.getenv("WARN_RATE", "0.15"))          # probability of WARN/4xx
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
-SERVICES = ["auth-service", "payment-service", "order-service", "inventory-service", "notification-service"]
+SERVICES = ["auth-service", "payment-service", "order-service", "inventory-service", "notification-service", "alert-service"]
 ENDPOINTS = ["/api/v1/login", "/api/v1/orders", "/api/v1/payments", "/api/v1/users", "/api/v1/inventory", "/health"]
 METHODS = ["GET", "POST", "PUT", "DELETE"]
 STATUS_OK = [200, 200, 200, 201, 204]
@@ -52,14 +53,19 @@ MESSAGES_ERROR = [
 
 IPS = [f"10.0.{random.randint(0,5)}.{random.randint(2,254)}" for _ in range(20)]
 
+logger = logging.getLogger("log-generator")
 
 def pick_level():
     r = random.random()
     if r < ERROR_RATE:
-        return "ERROR"
+        level = "ERROR"
     elif r < ERROR_RATE + WARN_RATE:
-        return "WARN"
-    return "INFO"
+        level = "WARN"
+    else:
+        level = "INFO"
+
+    logger.debug("pick_level() -> %s (r=%0.4f)", level, r)
+    return level
 
 
 def build_json_log():
@@ -73,7 +79,7 @@ def build_json_log():
         "INFO": random.choice(MESSAGES_INFO),
     }[level]
 
-    return {
+    log_record = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "level": level,
         "service": random.choice(SERVICES),
@@ -85,6 +91,8 @@ def build_json_log():
         "client_ip": random.choice(IPS),
         "message": message,
     }
+    logger.debug("build_json_log() -> %s", log_record)
+    return log_record
 
 
 def build_apache_log():
@@ -97,7 +105,9 @@ def build_apache_log():
         random.choice(STATUS_WARN) if level == "WARN" else random.choice(STATUS_OK)
     )
     size = random.randint(200, 15000)
-    return f'{ip} - - [{ts}] "{method} {endpoint} HTTP/1.1" {status} {size}'
+    log_line = f'{ip} - - [{ts}] "{method} {endpoint} HTTP/1.1" {status} {size}'
+    logger.debug("build_apache_log() -> %s", log_line)
+    return log_line
 
 
 def build_plain_log():
@@ -109,14 +119,17 @@ def build_plain_log():
         "INFO": random.choice(MESSAGES_INFO),
     }[level]
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-    return f"{ts} [{level}] {service}: {message}"
+    log_line = f"{ts} [{level}] {service}: {message}"
+    logger.debug("build_plain_log() -> %s", log_line)
+    return log_line
 
 
 def main():
-    logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(message)s")
-    logger = logging.getLogger("log-generator")
-    logger.info("Starting log generator | format=%s error_rate=%s warn_rate=%s",
-                LOG_FORMAT, ERROR_RATE, WARN_RATE)
+    log_level = getattr(logging, LOG_LEVEL, logging.INFO)
+    logging.basicConfig(stream=sys.stdout, level=log_level, format="%(asctime)s %(levelname)s %(message)s")
+    logger.info("Starting log generator | format=%s min_interval=%s max_interval=%s error_rate=%s warn_rate=%s",
+                LOG_FORMAT, MIN_INTERVAL, MAX_INTERVAL, ERROR_RATE, WARN_RATE)
+    logger.debug("Debug enabled. LOG_LEVEL=%s", LOG_LEVEL)
 
     while True:
         if LOG_FORMAT == "apache":
@@ -126,6 +139,7 @@ def main():
         else:
             line = json.dumps(build_json_log())
 
+        logger.debug("Generated log line: %s", line)
         print(line, flush=True)
         time.sleep(random.uniform(MIN_INTERVAL, MAX_INTERVAL))
 

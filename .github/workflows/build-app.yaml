@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Calculate Short SHA
+        id: vars
+        run: echo "sha_short=${GITHUB_SHA:0:7}" >> $GITHUB_OUTPUT
 
       - name: Build App container
         run: docker build -t ${{ vars.DOCKER_USERNAME }}/log-generator .
@@ -23,4 +26,7 @@ jobs:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: push image to dockerhub
-        run: docker push ${{ vars.DOCKER_USERNAME }}/log-generator:latest
+        run: docker push ${{ vars.DOCKER_USERNAME }}/log-generator:${{ steps.vars.outputs.sha_short }}
+      - name: Update image tag
+        run: |
+          sed -i "s|shivamsoin0408/log-generator:.*|shivamsoin0408/log-generator:${{ steps.vars.outputs.sha_short }}|" helm/logger/deployment.yaml
