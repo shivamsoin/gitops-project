@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Build App container
-        run: docker build -t log-generator .
+        run: docker build -t ${{ vars.DOCKER_USERNAME }}/log-generator .
       - name: list image
         run: docker image ls 
       - name: Login to Docker Hub
@@ -23,4 +23,4 @@ jobs:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: push image to dockerhub
-        run: docker push log-generator:latest
+        run: docker push ${{ vars.DOCKER_USERNAME }}/log-generator:latest
