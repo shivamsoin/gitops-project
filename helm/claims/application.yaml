@@ -4,11 +4,11 @@ metadata:
   name: log-gen
   namespace: argocd
 spec:
-  project: gitpos-project 
+  project: gitops-project 
   source:
     repoURL: https://github.com/shivamsoin/gitops-project.git
     targetRevision: main
-    path: /helm/logger
+    path: helm/logger
   destination:
     server: https://kubernetes.default.svc
     namespace: log-generator
