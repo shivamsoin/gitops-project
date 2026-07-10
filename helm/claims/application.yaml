@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: log-gen
+  namespace: argocd
+spec:
+  project: gitpos-project 
+  source:
+    repoURL: https://github.com/shivamsoin/gitops-project.git
+    targetRevision: main
+    path: /helm/logger
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: log-generator
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
