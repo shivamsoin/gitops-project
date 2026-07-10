@@ -22,3 +22,5 @@ jobs:
         with:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: push image to dockerhub
+        run: docker push log-generator:latest
