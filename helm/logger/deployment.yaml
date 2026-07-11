@@ -15,5 +15,5 @@ spec:
     spec:
       containers:
         - name: logger
-          image: shivamsoin0408/log-generator:52fcf5c
+          image: shivamsoin0408/log-generator:07133d5
           imagePullPolicy: IfNotPresent
