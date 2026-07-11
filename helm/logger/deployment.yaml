@@ -14,7 +14,6 @@ spec:
         app: logger
     spec:
       containers:
-      - name: logger
-        image: shivamsoin0408/log-generator
-        tag: 
-        imagePullPolicy: IfNotPresent
+        - name: logger
+          image: shivamsoin0408/log-generator
+          imagePullPolicy: IfNotPresent

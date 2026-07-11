@@ -29,9 +29,18 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: push image to dockerhub
         run: docker push ${{ vars.DOCKER_USERNAME }}/log-generator:${{ steps.vars.outputs.sha_short }}
-      - name: Update image tag
+
+      - name: 'Setup yq'
+        uses: dcarbone/install-yq-action@v1
+        with:
+          version: '${{ inputs.version }}'
+          download-compressed: '${{ inputs.download-compressed }}'
+          force: '${{ inputs.force }}'
+      - name: Update Image 
         run: |
-          sed -i "s|shivamsoin0408/log-generator:.*|shivamsoin0408/log-generator:${{ steps.vars.outputs.sha_short }}|" helm/logger/deployment.yaml
+          yq -i '.spec.template.spec.containers[0].image = "shivamsoin0408/log-generator:${{ steps.vars.outputs.sha_short }}"' ./helm/logger/deployment.yaml
+          cat ./helm/logger/deployment.yaml
+
       - name: Commit and push
         run: |
           git config user.name "github-actions"
