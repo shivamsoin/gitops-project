@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: log-gen
+  name: log-generator
   namespace: argocd
 spec:
   project: gitops-project 
