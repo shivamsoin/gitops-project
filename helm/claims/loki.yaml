@@ -11,6 +11,12 @@ spec:
     repoURL: https://github.com/grafana/helm-charts.git
     targetRevision: "main"
     path: charts/loki-stack
+    helm:
+      valuesObject: 
+        grafana:
+          enabled: false
+        promtail:
+          enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

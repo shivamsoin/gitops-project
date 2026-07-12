@@ -11,6 +11,16 @@ spec:
     repoURL: https://github.com/prometheus-community/helm-charts.git
     targetRevision: "main"
     path: charts/kube-prometheus-stack
+    helm: 
+      valuesObject:
+        grafana:
+          adminPassword: admin123
+          additionalDataSources:
+            - name: Loki
+              type: loki
+              url: http://loki.monitoring.svc.cluster.local:3100
+              access: proxy
+              isDefault: false
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
