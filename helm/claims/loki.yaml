@@ -1,16 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: prometheus
+  name: loki
   namespace: argocd
   finalizers:
     - resources-finalizer.argoproj.io
 spec:
   project: gitops-project
   source:
-    repoURL: https://github.com/prometheus-community/helm-charts.git
+    repoURL: https://github.com/grafana/helm-charts.git
     targetRevision: "main"
-    path: charts/kube-prometheus-stack
+    path: charts/loki-stack
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
