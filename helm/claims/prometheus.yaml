@@ -23,7 +23,6 @@ spec:
               type: loki
               url: http://loki.monitoring.svc.cluster.local:3100
               access: proxy
-              isDefault: false
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
