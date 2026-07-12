@@ -11,10 +11,13 @@ spec:
     repoURL: https://github.com/prometheus-community/helm-charts.git
     targetRevision: "main"
     path: charts/kube-prometheus-stack
-    helm: 
+    helm:
       valuesObject:
         grafana:
           adminPassword: admin123
+          sidecar:
+            datasources:
+              defaultDatasourceEnabled: true
           additionalDataSources:
             - name: Loki
               type: loki
