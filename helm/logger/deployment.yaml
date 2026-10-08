@@ -4,7 +4,7 @@ metadata:
   name: logger
   namespace: log-generator
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: logger
