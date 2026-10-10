@@ -12,7 +12,7 @@ spec:
   source:
     repoURL: https://github.com/shivamsoin/gitops-project.git
     targetRevision: HEAD
-    path: helm/bookinfo                   # holds bookinfo.yaml + bookinfo-networking.yaml
+    path: helm/bookinfo-app                   # holds bookinfo.yaml + bookinfo-networking.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: bookinfo
