@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bookinfo
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"          # only matters if a parent app-of-apps syncs it
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io     # deleting the app also deletes its resources
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/shivamsoin/gitops-project.git
+    targetRevision: HEAD
+    path: manifests/bookinfo                   # holds bookinfo.yaml + bookinfo-networking.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: bookinfo
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    managedNamespaceMetadata:
+      labels:
+        istio-injection: enabled               # sidecars injected at pod creation
+    retry:
+      limit: 5
+      backoff: { duration: 10s, factor: 2, maxDuration: 3m }
+  revisionHistoryLimit: 5
